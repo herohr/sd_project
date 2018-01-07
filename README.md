@@ -6,11 +6,11 @@
 
 **POST表单**
 
-| 表单项      | 数据类型           | 示例                               |
-| -------- | -------------- | -------------------------------- |
-| username | string(64)     | test                             |
-| password | string(32)-MD5 | 34819d7beeabb9260a5c854bc85b3e44 |
-| email    | string(64)     | test@test.email                  |
+| 表单项      | 数据类型           | 示例                                 |
+| -------- | -------------- | ---------------------------------- |
+| username | string(64)     | "test"                             |
+| password | string(32)-MD5 | "34819d7beeabb9260a5c854bc85b3e44" |
+| email    | string(64)     | "test@test.email"                  |
 
 **响应**
 
@@ -25,10 +25,10 @@
 
 **POST表单**
 
-| 表单项      | 数据类型           | 示例                               |
-| -------- | -------------- | -------------------------------- |
-| username | string(64)     | test                             |
-| password | string(32)-MD5 | 34819d7beeabb9260a5c854bc85b3e44 |
+| 表单项      | 数据类型           | 示例                                 |
+| -------- | -------------- | ---------------------------------- |
+| username | string(64)     | "test"                             |
+| password | string(32)-MD5 | "34819d7beeabb9260a5c854bc85b3e44' |
 
 **响应**
 
@@ -48,4 +48,5 @@
 | nickname      | string(64) | "petty"                                |
 | sex           | string(8)  | "male" / "female"                      |
 | age           | integer    | 18                                     |
-| college       | string(64) | 陕西师范大学"                                |
+| college       | string(64) | "陕西师范大学"                               |
+
