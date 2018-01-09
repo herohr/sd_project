@@ -78,11 +78,11 @@ WSGI_APPLICATION = 'sd_project.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': "sd_test",
-        "USER": "root",
-        "PASSWORD": "gg5211314",
-        "HOST": "LOCALHOST",
-        "PORT": "3306"
+        'NAME': "******",
+        "USER": "******",
+        "PASSWORD": "******",
+        "HOST": "*******",
+        "PORT": "******"
     }
 }
 
