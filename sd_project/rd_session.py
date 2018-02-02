@@ -5,8 +5,8 @@ import uuid
 class Manager:
     def __init__(self, connection=None):
         self.connection = connection or redis.StrictRedis(
-            host="192.168.1.220",
-            port=8888
+            host="localhost",
+            port=6379
         )
         self.name = "sd_project"
 
@@ -27,6 +27,13 @@ class Manager:
         self.set("{}".format(_uuid), _id)
 
         return _uuid
+
+    def set_image_session(self, image_id, signed_url, expire_time):
+        return self.set("{}-image-session:{}".format(self.name, image_id),
+                        "{}:{}".format(signed_url, int(expire_time)))
+
+    def get_signed_url(self, image_id):
+        return self.get("{}-image-session:{}".format(self.name, image_id))
 
 sessions = Manager()
 #

@@ -9,8 +9,6 @@ from sd_project.restful import FormParser
 def authorize(func):
     def _func(self, request):
         au = None
-        # if request.method == "POST":
-        #     au = request.POST.get("authorization")
         if request.method in {"POST", "GET"}:
             au = au or request.COOKIES.get("sessionID") or request.GET.get("authorization") or \
              request.POST.get("authorization")
@@ -36,16 +34,23 @@ def authorize(func):
 
 class UserAPI(restful.RESTFul):
     def post(self, request):
-        username = request.POST.get("username")
-        password = request.POST.get("password")
-        email = request.POST.get("email")
+        required = {"username": "", "password": "", "email": ""}
+
+        for key in required.keys():
+            val = request.POST.get(key)
+            if val is None:
+                return JsonResponse({
+                    "reason": "{} is required".format(key)
+                }, status=400)
+            required[key] = val
+
 
         tags = []
-        if len(username) > 64:
+        if len(required['username']) > 64:
             tags.append("username")
-        if len(password) > 256:
+        if len(required['password']) > 256:
             tags.append("password")
-        if len(email) > 256:
+        if len(required['email']) > 256:
             tags.append("email")
         if tags:
             return JsonResponse({
@@ -54,9 +59,12 @@ class UserAPI(restful.RESTFul):
             }, status=400)
 
         try:
-            models.User.objects.filter(username=username).get()
+            models.User.objects.filter(username=required['username']).get()
         except models.User.DoesNotExist:
-            new_user = models.User(username=username, password=password, email=email)
+            new_user = models.User(username=required['username'],
+                                   password=required['password'],
+                                   email=required['email'])
+
             new_user.save()
             return JsonResponse({}, status=200)
         except models.User.MultipleObjectsReturned:
@@ -76,7 +84,7 @@ class UserInfoAPI(restful.RESTFul):
         except models.UserInfo.DoesNotExist:
             return JsonResponse({
                 "reason": "User's info does not exist"
-            }, status=400)
+            }, status=404)
 
         return JsonResponse({
             "sex": user.sex,

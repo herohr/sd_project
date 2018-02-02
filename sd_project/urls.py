@@ -15,12 +15,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from sd_project import user
+from sd_project import user, image
 
 urlpatterns = [
     path('admin/', admin.site.urls),
 
     path('users', user.userAPI.router(methods=["POST", ])),
     path('users/login', user.login),
-    path('users/info', user.user_info_API.router(methods=["GET", "POST", "PUT"]))
+    path('users/info', user.user_info_API.router(methods=["GET", "POST", "PUT"])),
+
+    path("images", image.image_store_API.router(methods=["GET", "POST", "PUT"]))
 ]

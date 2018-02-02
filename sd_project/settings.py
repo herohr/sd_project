@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.db.models',
-    'sd_project'
+    'sd_project',
+    'django.urls'
 ]
 
 MIDDLEWARE = [
@@ -78,11 +79,11 @@ WSGI_APPLICATION = 'sd_project.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': "******",
-        "USER": "******",
-        "PASSWORD": "******",
-        "HOST": "*******",
-        "PORT": "******"
+        'NAME': "sd_test",
+        "USER": "root",
+        "PASSWORD": "",
+        "HOST": "localhost",
+        "PORT": "3306"
     }
 }
 
@@ -126,3 +127,8 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 TEMPLATE_DIRS = (os.path.join(BASE_DIR,  'templates'),)
+
+OSS_KEY = "LTAIaNUnqzQf5kdD"
+OSS_SECRET = "meEuxqz8GAGtbtuiZhj72C0XPiLgoY"
+OSS_IMAGE_BUCKET_NAME = "sd-project-test"
+OSS_ENDPOINT = "oss-cn-shenzhen.aliyuncs.com"
