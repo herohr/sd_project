@@ -132,3 +132,6 @@ OSS_KEY = "LTAIaNUnqzQf5kdD"
 OSS_SECRET = "meEuxqz8GAGtbtuiZhj72C0XPiLgoY"
 OSS_IMAGE_BUCKET_NAME = "sd-project-test"
 OSS_ENDPOINT = "oss-cn-shenzhen.aliyuncs.com"
+
+AZURE_API_ENDPOINT = "https://api.cognitive.azure.cn/vision/v1.0/tag"
+AZURE_KEY = "6a6576876831497bbdf6539c13c9a378"

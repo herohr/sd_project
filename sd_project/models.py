@@ -29,3 +29,10 @@ class ImageStorage(models.Model):
     verified = models.BooleanField(default=False)
     oss_key = models.CharField(max_length=512, null=False)
     create_time = models.DateTimeField()
+
+
+class ImageTag(models.Model):
+    id = models.AutoField(primary_key=True)
+    image_store_id = models.IntegerField(null=False)
+    tags = models.CharField(max_length=512, default="[]")
+

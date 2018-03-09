@@ -1,9 +1,13 @@
+import json
+import threading
+
+import requests
 from django.conf import settings
 from sd_project import sd_oss
 from sd_project import restful
 from django.http import JsonResponse
 from sd_project.auth import authorize
-from sd_project.models import ImageStorage
+from sd_project.models import ImageStorage, ImageTag
 import time
 from django.utils import timezone
 from sd_project.rd_session import sessions
@@ -15,6 +19,69 @@ _bucket_name = settings.OSS_IMAGE_BUCKET_NAME
 _endpoint = settings.OSS_ENDPOINT
 
 oss = sd_oss.OSS(_id, _key, bucket_name=_bucket_name, endpoint=_endpoint)
+
+
+class ImageSimilar:
+    instance = None
+    lock = threading.RLock()
+
+    def __init__(self):
+        self.img_tags = []
+        for i in ImageTag.objects.all():
+            self.img_tags.append({
+                "id": i.id,
+                "image_store_id": i.image_store_id,
+                "tags": set(json.loads(i.tags))
+            })
+
+    @staticmethod
+    def update(tag):
+        if ImageSimilar.instance is None:
+            ImageSimilar.instance = ImageSimilar()
+        self = ImageSimilar.instance
+
+        i = tag
+        similar_count = 0
+        max_num = 0
+        max_ins = None
+        this_tag_dict = {
+            "id": i.id,
+            "image_store_id": i.image_store_id,
+            "tags": set(json.loads(i.tags)),
+            "similar": 0
+        }
+        ImageSimilar.lock.acquire()
+        for i in self.img_tags:
+            print(i["tags"], this_tag_dict['tags'])
+            i["similar"] = len(this_tag_dict['tags'] & i["tags"])
+            if i["similar"] >= 2:
+                similar_count += 1
+            if i["similar"] >= max_num:
+                max_num = i["similar"]
+                max_ins = i
+            print(i["similar"])
+        self.img_tags.append(this_tag_dict)
+        ImageSimilar.lock.release()
+
+        if similar_count == 0:
+            return JsonResponse({
+                "expires": 6000,
+                "result": None}, status=200)
+
+        try:
+            image = ImageStorage.objects.get(id=max_ins['image_store_id'])
+        except ImageStorage.DoesNotExist:
+            return JsonResponse({
+                "reason": "server error"
+            }, status=500)
+        url, _ = get_url(image.id, image.oss_key)
+        return JsonResponse({
+            "expires": 6000,
+            "result": {
+                "similar_num": similar_count,
+                "similarest_photo": url
+            }
+        }, status=200)
 
 
 def get_url(img_id, img_key, expires=6000, out_time=300):
@@ -29,7 +96,22 @@ def get_url(img_id, img_key, expires=6000, out_time=300):
             return url, expire_time
     signed_url = oss.sign_url("GET", img_key, expires=expires)
     sessions.set_image_session(img_id, signed_url, now + expires)
-    return signed_url, now+expires
+    return signed_url, now + expires
+
+
+def get_image_tags(img_url, key):
+    headers = {'Ocp-Apim-Subscription-Key': key}
+    url = {"url": img_url}
+    print(json.dumps(url))
+    resp = requests.post(url=settings.AZURE_API_ENDPOINT,
+                         data=json.dumps(url),
+                         headers=headers)
+
+    tags = []
+    for i in json.loads(resp.content.decode())["tags"]:
+        tags.append(i["name"])
+
+    return tags
 
 
 class ImageStore(restful.RESTFul):
@@ -153,7 +235,15 @@ class ImageStore(restful.RESTFul):
                 if status_code == "200":
                     image.verified = True
                     image.save()
-                    return JsonResponse({}, status=200)
+
+                    url, _ = get_url(img_id=image_id, img_key=image.oss_key)
+
+                    tags = get_image_tags(url, key=settings.AZURE_KEY)
+                    img_tag = ImageTag(image_id, image.id, json.dumps(tags))
+
+                    img_tag.save()
+
+                    return ImageSimilar.update(img_tag)
                 elif status_code is None:
                     return JsonResponse({
                         "reason": "status_code is required"

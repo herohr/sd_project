@@ -13,6 +13,7 @@ class RESTFul:
                 views[i] = method
 
         def _func(request):
+            print(request.GET, request.POST, request.body)
             handler = views.get(request.method)
             if callable(handler):
                 return handler(request)

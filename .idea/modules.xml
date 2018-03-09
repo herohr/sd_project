@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$USER_HOME$/ALI_API_service/.idea/ALI_API_service.iml" filepath="$USER_HOME$/ALI_API_service/.idea/ALI_API_service.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/sd_project.iml" filepath="$PROJECT_DIR$/.idea/sd_project.iml" />
+      <module fileurl="file://$USER_HOME$/waimai_app/.idea/waimai_app.iml" filepath="$USER_HOME$/waimai_app/.idea/waimai_app.iml" />
     </modules>
   </component>
 </project>
